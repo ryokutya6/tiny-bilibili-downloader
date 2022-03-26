@@ -3,9 +3,9 @@ package utils
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/CeriChen/tiny-bilibili-downloader/models"
 	"io/ioutil"
 	"net/http"
-	"tiny-bilibili-downloader/models"
 )
 
 // GetVideoDownloadInfo 获取下载信息--高清晰视频需要输入sessionData配置项

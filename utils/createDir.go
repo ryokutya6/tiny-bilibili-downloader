@@ -1,8 +1,8 @@
 package utils
 
 import (
+	"github.com/CeriChen/tiny-bilibili-downloader/models"
 	"os"
-	"tiny-bilibili-downloader/models"
 )
 
 func CreateDirAndToDir(data *models.VideoData) {

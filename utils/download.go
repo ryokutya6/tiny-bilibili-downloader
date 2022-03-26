@@ -2,13 +2,13 @@ package utils
 
 import (
 	"fmt"
+	"github.com/CeriChen/tiny-bilibili-downloader/models"
 	"io"
 	"net/http"
 	"os"
 	"strconv"
 	"strings"
 	"time"
-	"tiny-bilibili-downloader/models"
 )
 
 var (

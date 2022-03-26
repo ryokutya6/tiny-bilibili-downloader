@@ -2,10 +2,10 @@ package utils
 
 import (
 	"fmt"
+	"github.com/CeriChen/tiny-bilibili-downloader/models"
 	"net/http"
 	"strconv"
 	"strings"
-	"tiny-bilibili-downloader/models"
 )
 
 // ParseOptions 解析视频下载配置

@@ -2,8 +2,8 @@ package main
 
 import (
 	"flag"
+	"github.com/CeriChen/tiny-bilibili-downloader/utils"
 	"log"
-	"tiny-bilibili-downloader/utils"
 )
 
 var (

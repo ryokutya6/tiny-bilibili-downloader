@@ -2,10 +2,10 @@ package utils
 
 import (
 	"encoding/json"
+	"github.com/CeriChen/tiny-bilibili-downloader/models"
 	"io/ioutil"
 	"net/http"
 	"strings"
-	"tiny-bilibili-downloader/models"
 )
 
 // GetVideoInfo 获取视频信息，输入bv号或者url
