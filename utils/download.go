@@ -8,6 +8,7 @@ import (
 	"os"
 	"strconv"
 	"strings"
+	"sync"
 	"time"
 )
 
@@ -32,6 +33,8 @@ var (
 	downloadDir string // 下载目录
 
 	allFiles, curFiles int
+
+	mutex sync.Mutex
 )
 
 func Download(options *models.DownloadOptions) (err error) {
@@ -54,7 +57,7 @@ func DownloadVideo(options *models.DownloadOptions) (err error) {
 	if options.PageChoice == nil {
 		allFiles = 1
 		fmt.Printf("[START DOWNLOADING] ALL %d VIDEO(S).\n", allFiles)
-		err = DownloadOneVideo(options.VD.Title, options)
+		err = DownloadOneVideo(options.VD.Title, options, options.DD)
 		return
 	}
 	allFiles = options.PageChoice[1] - options.PageChoice[0] + 1
@@ -64,7 +67,7 @@ func DownloadVideo(options *models.DownloadOptions) (err error) {
 }
 
 // DownloadOneVideo 下载单一视频
-func DownloadOneVideo(name string, options *models.DownloadOptions) error {
+func DownloadOneVideo(name string, options *models.DownloadOptions, dd *models.DownloadData) error {
 	// 处理文件格式
 	suffix := options.DD.Format
 	if strings.Contains(suffix, "flv") {
@@ -88,7 +91,6 @@ func DownloadOneVideo(name string, options *models.DownloadOptions) error {
 		fmt.Printf("status:%d,err:%v\n", all.StatusCode, err)
 		return err
 	}
-
 	if err != nil {
 		return err
 	}
@@ -104,14 +106,15 @@ func DownloadOneVideo(name string, options *models.DownloadOptions) error {
 			return err
 		}
 	}
-	duration, _ := time.ParseDuration(strconv.Itoa(options.DD.TimeLength) + "ms")
+	duration, _ := time.ParseDuration(strconv.Itoa(dd.TimeLength) + "ms")
 	fmt.Printf("[TASK] Start downloading: '%s' -> '%s' <%s| %dMB |%s>\n",
 		name,
 		file.Name(),
 		videoQuality[options.DD.Quality],
-		options.DD.Durl[0].Size/MB,
+		dd.Durl[0].Size/MB,
 		duration.String(),
 	)
+	mutex.Unlock()
 	// 文件拷贝
 	_, err = io.Copy(file, all.Body)
 	if err != nil {
@@ -134,13 +137,14 @@ func DownloadMultiVideo(options *models.DownloadOptions) error {
 		select {
 		case <-token:
 			go func() {
+				mutex.Lock()
 				options.VD.Cid = p.Cid
 				err := GetVideoDownloadInfo(options)
 				if err != nil {
 					panic(err)
 				}
 				var namePrefix = "[P" + strconv.Itoa(p.Page) + "]"
-				err = DownloadOneVideo(namePrefix+p.Part, options)
+				err = DownloadOneVideo(namePrefix+p.Part, options, options.DD)
 				if err != nil {
 					panic(err)
 				}
