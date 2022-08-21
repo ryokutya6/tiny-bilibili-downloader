@@ -30,8 +30,6 @@ var (
 
 	token chan interface{} //令牌桶
 
-	downloadDir string // 下载目录
-
 	allFiles, curFiles int
 
 	mutex sync.Mutex
@@ -49,10 +47,13 @@ func Download(options *models.DownloadOptions) (err error) {
 
 func DownloadVideo(options *models.DownloadOptions) (err error) {
 	if options.Bv == "" {
-		fmt.Println("need bv id..")
+		fmt.Println("need bv id.")
 		return
 	}
-	CreateDirAndToDir(options.VD)
+	if err = CreateDirAndToDir(options); err != nil {
+		fmt.Println("create dir failed.")
+		return
+	}
 
 	if options.PageChoice == nil {
 		allFiles = 1
@@ -99,7 +100,7 @@ func DownloadOneVideo(name string, options *models.DownloadOptions, dd *models.D
 	var file *os.File
 	defer file.Close()
 	file, err = os.Create(fileName)
-	if os.IsNotExist(err) {
+	if os.IsExist(err) {
 		err = nil
 		file, err = os.Create(options.Bv + ".flv")
 		if err != nil {

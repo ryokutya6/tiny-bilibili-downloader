@@ -84,7 +84,6 @@ type DownloadOptions struct {
 	PageChoice  []int
 	SessionData string
 	SavePath    string
-
-	DD *DownloadData
-	VD *VideoData
+	DD          *DownloadData
+	VD          *VideoData
 }

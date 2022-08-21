@@ -1,18 +1,22 @@
 package utils
 
 import (
+	"fmt"
 	"github.com/CeriChen/tiny-bilibili-downloader/models"
 	"os"
 )
 
-func CreateDirAndToDir(data *models.VideoData) {
-	downloadDir = data.Bvid
+func CreateDirAndToDir(options *models.DownloadOptions) (err error) {
+	options.SavePath = fmt.Sprintf("%s/%s", options.SavePath, options.VD.Bvid)
 	// 查看文件夹是否存在
-	var err error
-	_, err = os.Stat(data.Bvid)
+	_, err = os.Stat(options.SavePath)
 	if os.IsNotExist(err) {
 		// 不存在则创建文件夹
-		_ = os.Mkdir(data.Bvid, os.ModePerm)
+		if err = os.Mkdir(options.SavePath, os.ModePerm); err != nil {
+			fmt.Println("文件夹创建失败，请检查路径是否存在。")
+			return
+		}
 	}
-	_ = os.Chdir(downloadDir)
+	_ = os.Chdir(options.SavePath)
+	return
 }
